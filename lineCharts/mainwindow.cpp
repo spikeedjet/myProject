@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
         horizontalAxis->setRange(0, x);
         verticalAxis->setRange(0, 10);
     });
-    timer->start(600); // Add a new point every second
+    timer->start(100); // Add a new point every second
 
     auto chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::NonCosmeticBrushPatterns);
@@ -133,7 +133,15 @@ MainWindow::MainWindow(QWidget *parent)
     });
 }
 
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+double MainWindow::calculateY(double x, double a = 20)
+{
+    return pow(x, 2.0/3.0) + 0.9 * sqrt(3.3 - x * x) * sin(a * M_PI * x);
+
 }

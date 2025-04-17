@@ -18,6 +18,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    double calculateY(double x, double a) ;
+
 
 private:
     Ui::MainWindow *ui;
