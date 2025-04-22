@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/TeslaInfotainment">
+<file alias="main.qml">D:/lhb/Code/myProject/TeslaInfotainment/main.qml</file>
+</qresource>
+</RCC>
