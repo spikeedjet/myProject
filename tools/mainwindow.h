@@ -1,9 +1,7 @@
-﻿#ifndef MAINWINDOW_H
+#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-#include <QtCharts/QChartView>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,11 +17,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QColor selectColor();
+private slots:
+    void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_4_clicked();
+
+    void on_pushButton_5_clicked();
 
 private:
     Ui::MainWindow *ui;
-
 };
 #endif // MAINWINDOW_H
