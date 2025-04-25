@@ -1,0 +1,6 @@
+# ...existing code...
+target_compile_definitions(${PROJECT_NAME} 
+    PRIVATE 
+        UDPCLIENT_LIBRARY
+)
+# ...existing code...

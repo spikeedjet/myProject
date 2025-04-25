@@ -1,4 +1,4 @@
-﻿#include <QGuiApplication>
+#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
@@ -17,10 +17,6 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
     engine.load(url);
-
-
-    // Console.log(Qt.resolvedUrl("ui/BottomBar"))
-
 
     return app.exec();
 }

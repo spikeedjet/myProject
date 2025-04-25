@@ -14,7 +14,9 @@
 #include <QRandomGenerator>
 #include <QSplineSeries>
 #include <QColorDialog>
+#include <QMutexLocker>
 
+#define UPDATE_THRESHOLD 1
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -41,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     series->setPointsVisible(true);
 
     auto series01 = new  QSplineSeries;
+    // Store series01 as member variable
+    this->series01 = series01;
     series01->append(0,2);
     series01->append(2,2);
     series01->append(3,3);
@@ -50,10 +54,9 @@ MainWindow::MainWindow(QWidget *parent)
     series01->append(18,4);
     series01->append(23,1);
     series01->setName("c++");
-    series01->setPointsVisible(true);
-    series01->setUseOpenGL(true);
+    series01->setUseOpenGL(true);  // Enable OpenGL rendering
+    series01->setPointsVisible(false);  // Disable points for better performance
     series01->setPen(QPen(Qt::red));
-    series01->setPointsVisible(true);
 
     QPen pen1(Qt::red);
     series->setPen(pen1);
@@ -61,19 +64,26 @@ MainWindow::MainWindow(QWidget *parent)
     QPen pen2(Qt::blue);
     series01->setPen(pen2);
 
-   
+    // Initialize timer
+    updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateSeries);
+    updateTimer->setInterval(100);  // Faster data collection, less frequent visual updates
+    updateTimer->start();
+
+    // Store initial points
+    for (int i = 0; i < series01->count(); ++i) {
+        dataPoints.append(series01->at(i));
+    }
 
 
     //chart
     auto chart = new QChart;
+    this->chart = chart;  // Store chart pointer
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignRight);
     chart->addSeries(series);
     chart->addSeries(series01);
     chart->createDefaultAxes();
-
-    
-
     //更改曲线颜色
     for (QLegendMarker* marker : chart->legend()->markers()) {
         // Connect to marker's clicked signal
@@ -95,11 +105,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
+
+
     //chartview
     auto customChartView = new ChartView;
     customChartView->setChart(chart);
     customChartView->setRenderHints(QPainter::NonCosmeticBrushPatterns | QPainter::Antialiasing | QPainter::SmoothPixmapTransform); // 添加抗锯齿
     customChartView->setMinimumSize(400,300);
+    customChartView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     ui->verticalLayout->addWidget(customChartView);
 
 
@@ -139,7 +152,35 @@ MainWindow::~MainWindow()
 
 QColor MainWindow::selectColor()
 {
-    auto color =  QColorDialog::getColor();
-    return color;
+    return QColorDialog::getColor(Qt::white, this, "选择颜色");
+}
+
+void MainWindow::updateSeries()
+{
+    QMutexLocker locker(&dataLock);
+    
+    // Add new point
+    qreal lastX = dataPoints.last().x();
+    qreal newX = lastX + 1;
+    qreal newY = QRandomGenerator::global()->bounded(1, 10);
+    dataPoints.append(QPointF(newX, newY));
+
+    updateCounter++;
+    
+    // Only update visual every UPDATE_THRESHOLD points
+    if (updateCounter >= UPDATE_THRESHOLD) {
+        updateCounter = 0;
+        
+        // Update series in batches
+        series01->replace(dataPoints);
+        
+        // Update X axis range
+        if (QValueAxis *axisX = qobject_cast<QValueAxis*>(chart->axes(Qt::Horizontal).first())) {
+            axisX->setRange(dataPoints.first().x(), dataPoints.last().x());
+        }
+        
+        // Force immediate update
+        chart->update();
+    }
 }
 
