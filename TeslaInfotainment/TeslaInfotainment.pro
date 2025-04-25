@@ -6,8 +6,7 @@ SOURCES += \
 resources.files = main.qml 
 resources.prefix = /$${TARGET}
 RESOURCES += resources \
-    build/Desktop_Qt_6_5_3_MSVC2019_64bit-Debug/debug/qmake_resources.qrc \
-    qml.qrc
+    res.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -19,5 +18,3 @@ QML_DESIGNER_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-DISTFILES +=

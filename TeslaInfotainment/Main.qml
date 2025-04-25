@@ -1,4 +1,4 @@
-﻿import QtQuick
+import QtQuick
 import QtLocation
 import QtPositioning
 
@@ -18,6 +18,19 @@ Window {
         }
         color: "black"
         height: parent.height / 12
+
+
+        Image {
+            id: carIcon
+            anchors{
+                left: parent.left
+                leftMargin: 30
+                verticalCenter: parent.verticalCenter
+            }
+            height: parent.height * .85
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/assets/car-icon.png"
+        }
     }
 
 
@@ -29,8 +42,16 @@ Window {
             top: parent.top
 
         }
-        color: "green"
+        color: "white"
         width: parent.width * 1/3
+
+        Image {
+            id: car
+            anchors.centerIn: parent
+            width: parent.width * 0.95
+            fillMode: Image.PreserveAspectFit
+            source: "qrc:/ui/assets/car.png"
+        }
     }
 
 
