@@ -33,7 +33,10 @@ public:
 
     // 静态成员变量，保存唯一实例
 
-
+    //允许在头文件中定义静态成员变量，并确保不会违反ODR规则。这对于头文件库（header-only library）特别重要，
+    //因为没有对应的.cpp文件来定义静态成员。
+    //inline关键字解决:main.obj:-1: error: LNK2001: 无法解析的外部符号 "private: static class CommunicationsProtocol *
+    //CommunicationsProtocol::m_instance" (?m_instance@CommunicationsProtocol@@0PEAV1@EA)
     static inline CommunicationsProtocol* m_instance = nullptr;
 
 

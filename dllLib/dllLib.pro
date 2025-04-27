@@ -14,6 +14,7 @@ SOURCES += \
     communicationsprotocol.cpp \
     dlllib.cpp \
     tcpclient.cpp \
+    udpclient.cpp \
     utils.cpp
 
 HEADERS += \
@@ -21,6 +22,7 @@ HEADERS += \
     dllLib_global.h \
     dlllib.h \
     tcpclient.h \
+    udpclient.h \
     utils.h
 
 # Default rules for deployment.

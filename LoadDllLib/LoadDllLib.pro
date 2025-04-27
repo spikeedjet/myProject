@@ -22,7 +22,10 @@ HEADERS += \
     communicationsprotocol.h \
     dllLib_global.h \
     dlllib.h \
-    tcpclient.h
+    tcpclient.h \
+    udpclient.h
+    
+ 
 
 
 
