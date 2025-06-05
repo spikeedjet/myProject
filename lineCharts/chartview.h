@@ -1,83 +1,61 @@
-#ifndef CHARTVIEW_H
-#define CHARTVIEW_H
+#pragma once
 
-#include <QChartView>
+#include <QtCharts/QtCharts>
+#include <QtCharts/QChartView>
+#include <QtCharts/QSplineSeries>
+#include <QtCharts/QChart>
+#include <QtCharts/QLegendMarker>
+#include <QtCharts/QValueAxis>
+#include <QLabel>
+#include <QTimer>
+#include <QMutex>
+#include <QColorDialog>
 
-class ChartView : public QChartView {
+
+
+class ChartView : public QChartView
+{
+    Q_OBJECT
+public:
+    explicit ChartView(QWidget *parent = nullptr);
+    QLabel* coordLabel() const { return m_coordLabel; }
+    void addDataPointToSeries01(const QPointF &point);
+    void addDataPointToSeries(const QPointF &point);
+
+
+
 protected:
-    void mousePressEvent(QMouseEvent *event) override {
-        if (event->button() == Qt::LeftButton) {
-            lastPos = event->pos();
-            isPanning = true;
-            setCursor(Qt::ClosedHandCursor);
-        }
-        QChartView::mousePressEvent(event);
-    }
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void showEvent(QShowEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
-    void mouseReleaseEvent(QMouseEvent *event) override {
-        if (event->button() == Qt::LeftButton) {
-            isPanning = false;
-            setCursor(Qt::ArrowCursor);
-        }
-        QChartView::mouseReleaseEvent(event);
-    }
 
-    void mouseMoveEvent(QMouseEvent *event) override {
-        if (isPanning) {
-            QPointF delta = (event->pos() - lastPos);
-            chart()->scroll(-delta.x(), delta.y());
-            lastPos = event->pos();
-        }
-
-        // Update crosshair
-        QPointF chartPos = chart()->mapToValue(event->pos());
-        if (crosshairX) crosshairX->setPos(QPointF(chartPos.x(), 0));
-        if (crosshairY) crosshairY->setPos(QPointF(0, chartPos.y()));
-
-        QChartView::mouseMoveEvent(event);
-    }
-
-    void wheelEvent(QWheelEvent *event) override {
-        qreal factor = event->angleDelta().y() > 0 ? 0.9 : 1.1;
-        QRectF rect = chart()->plotArea();
-        QPointF center = rect.center();
-        rect.setSize(rect.size() * factor);
-        QPointF newCenter = rect.center();
-        QPointF offset = newCenter - center;
-        chart()->zoomIn(rect.adjusted(-offset.x(), -offset.y(), -offset.x(), -offset.y()));
-        QChartView::wheelEvent(event);
-    }
-
-    void showEvent(QShowEvent *event) override {
-        // Initialize crosshair lines
-        if (!crosshairX) {
-            crosshairX = new QGraphicsLineItem(chart());
-            crosshairX->setPen(QPen(Qt::gray, 1, Qt::DashLine));
-            crosshairY = new QGraphicsLineItem(chart());
-            crosshairY->setPen(QPen(Qt::gray, 1, Qt::DashLine));
-            updateCrosshair();
-        }
-        QChartView::showEvent(event);
-    }
-
-    void resizeEvent(QResizeEvent *event) override {
-        QChartView::resizeEvent(event);
-        updateCrosshair();
-    }
 
 private:
-    QPoint lastPos;
-    bool isPanning = false;
+    QColor selectColor();
+    void setupChart();
+    void setupLegend();
+    void setupSeries();
+    void setupCoordLabel();
+    void updateCrosshair();
+
+
+    QSplineSeries *series = nullptr;
+    QSplineSeries *series01 = nullptr;
+    QChart *chart = nullptr;
+    QLabel *m_coordLabel = nullptr;
+    QTimer *updateTimer = nullptr;
+    QVector<QPointF> dataPointsjava;
+    QVector<QPointF> dataPoints;
+    int updateCounter = 0;
+    QMutex dataLock;
+
+    // Crosshair
     QGraphicsLineItem *crosshairX = nullptr;
     QGraphicsLineItem *crosshairY = nullptr;
-
-    void updateCrosshair() {
-        if (crosshairX && crosshairY) {
-            QRectF plotArea = chart()->plotArea();
-            crosshairX->setLine(plotArea.left(), 0, plotArea.right(), 0);
-            crosshairY->setLine(0, plotArea.top(), 0, plotArea.bottom());
-        }
-    }
+    QPoint lastPos;
+    bool isPanning = false;
 };
-
-#endif // CHARTVIEW_H

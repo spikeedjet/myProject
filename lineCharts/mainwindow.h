@@ -9,6 +9,8 @@
 #include <QVector>
 #include <QPointF>
 #include <QMutex>
+#include "chartview.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,10 +26,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QColor selectColor();
 
-private slots:
-    void updateSeries();
+
+
 
 private:
     Ui::MainWindow *ui;
@@ -38,5 +39,6 @@ private:
     QMutex dataLock;
     int updateCounter = 0;
     const int UPDATE_THRESHOLD = 5; // Update chart every 5 data points
+    ChartView *customChartView;
 };
 #endif // MAINWINDOW_H
